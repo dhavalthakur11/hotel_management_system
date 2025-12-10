@@ -1,0 +1,98 @@
+<?php
+// Application Constants
+
+// Application Settings
+define('APP_NAME', 'Hotel Management System');
+define('APP_VERSION', '1.0.0');
+define('BASE_URL', 'http://localhost/hotel-management');
+
+// Session Settings
+define('SESSION_TIMEOUT', 3600); // 1 hour in seconds
+
+// User Roles
+define('ROLE_ADMIN', 'admin');
+define('ROLE_RECEPTIONIST', 'receptionist');
+define('ROLE_CUSTOMER', 'customer');
+
+// Room Status
+define('ROOM_AVAILABLE', 'available');
+define('ROOM_OCCUPIED', 'occupied');
+define('ROOM_MAINTENANCE', 'maintenance');
+define('ROOM_RESERVED', 'reserved');
+
+// Booking Status
+define('BOOKING_PENDING', 'pending');
+define('BOOKING_CONFIRMED', 'confirmed');
+define('BOOKING_CHECKED_IN', 'checked_in');
+define('BOOKING_CHECKED_OUT', 'checked_out');
+define('BOOKING_CANCELLED', 'cancelled');
+
+// Payment Status
+define('PAYMENT_PENDING', 'pending');
+define('PAYMENT_PAID', 'paid');
+define('PAYMENT_PARTIAL', 'partial');
+define('PAYMENT_REFUNDED', 'refunded');
+
+// Payment Methods
+define('PAYMENT_CASH', 'cash');
+define('PAYMENT_CARD', 'card');
+define('PAYMENT_UPI', 'upi');
+define('PAYMENT_NET_BANKING', 'net_banking');
+
+// Notification Types
+define('NOTIF_BOOKING_CONFIRMATION', 'booking_confirmation');
+define('NOTIF_CHECK_IN_REMINDER', 'check_in_reminder');
+define('NOTIF_CHECK_OUT_REMINDER', 'check_out_reminder');
+define('NOTIF_PAYMENT_SUCCESS', 'payment_success');
+
+// Date Format
+define('DATE_FORMAT', 'Y-m-d');
+define('DATETIME_FORMAT', 'Y-m-d H:i:s');
+define('DISPLAY_DATE_FORMAT', 'd-m-Y');
+
+// Pagination
+define('RECORDS_PER_PAGE', 10);
+
+// File Upload
+define('UPLOAD_PATH', __DIR__ . '/../public/uploads/');
+define('MAX_FILE_SIZE', 5242880); // 5MB
+
+// Email Settings
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USERNAME', 'your-email@gmail.com');
+define('SMTP_PASSWORD', 'your-password');
+define('FROM_EMAIL', 'noreply@hotelmanagement.com');
+define('FROM_NAME', 'Hotel Management System');
+
+// SMS Settings
+define('SMS_API_KEY', 'your-sms-api-key');
+define('SMS_SENDER_ID', 'HOTEL');
+
+// Tax Settings
+define('GST_RATE', 0.18); // 18%
+define('SERVICE_CHARGE', 0.10); // 10%
+
+// Audit Actions
+define('ACTION_CREATE', 'create');
+define('ACTION_UPDATE', 'update');
+define('ACTION_DELETE', 'delete');
+define('ACTION_LOGIN', 'login');
+define('ACTION_LOGOUT', 'logout');
+define('ACTION_VIEW', 'view');
+
+// Error Messages
+define('ERR_INVALID_CREDENTIALS', 'Invalid username or password');
+define('ERR_UNAUTHORIZED', 'You are not authorized to access this resource');
+define('ERR_SESSION_EXPIRED', 'Your session has expired. Please login again');
+define('ERR_ROOM_NOT_AVAILABLE', 'Room is not available for selected dates');
+define('ERR_INVALID_INPUT', 'Invalid input provided');
+
+// Success Messages
+define('MSG_LOGIN_SUCCESS', 'Login successful');
+define('MSG_LOGOUT_SUCCESS', 'Logout successful');
+define('MSG_BOOKING_SUCCESS', 'Booking created successfully');
+define('MSG_SAVE_SUCCESS', 'Data saved successfully');
+define('MSG_UPDATE_SUCCESS', 'Data updated successfully');
+define('MSG_DELETE_SUCCESS', 'Data deleted successfully');
+?>
