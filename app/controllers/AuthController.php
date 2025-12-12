@@ -227,9 +227,9 @@ class AuthController {
     }
     
     // Get current username
-    public static function getUsername() {
-        return $_SESSION['username'] ?? '';
-    }
+    // public static function getUsername() {
+    //     return $_SESSION['username'] ?? '';
+    // }
     
     // Track failed login attempts (basic rate limiting)
     private function trackFailedLogin() {

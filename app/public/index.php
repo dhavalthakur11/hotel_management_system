@@ -1,21 +1,22 @@
 <?php
-// Entry point for the application
-
-// Start session
-session_start();
-
-// Error reporting (disable in production)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 // Load configuration files
-require_once __DIR__ . '/../config/constants.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/routing.php';
+require_once '../config/database.php';
+require_once '../config/constants.php';
+require_once '../config/routing.php';
 
-// Initialize router
+// Load all models
+$model_dir = '../models/';
+foreach (glob($model_dir . '*.php') as $file) {
+    require_once $file;
+}
+
+// Load all controllers
+$controller_dir = '../controllers/';
+foreach (glob($controller_dir . '*.php') as $file) {
+    require_once $file;
+}
+
+// Start routing
 $router = new Router();
-
-// Route the request
 $router->route();
 ?>
