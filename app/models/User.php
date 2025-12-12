@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/constants.php';
 
 class User {
     private $db;
@@ -67,8 +65,8 @@ class User {
     
     // Create new user
     public function create($data) {
-        $sql = "INSERT INTO users (user_id, username, password, email, full_name, phone, role, is_active, created_at) 
-                VALUES (user_seq.NEXTVAL, :username, :password, :email, :full_name, :phone, :role, 1, SYSDATE)";
+        $sql = "INSERT INTO users (username, password, email, full_name, phone, role, is_active, created_at) 
+                VALUES (:username, :password, :email, :full_name, :phone, :role, 1, SYSDATE)";
         
         $params = [
             ':username' => $data['username'],
@@ -81,7 +79,7 @@ class User {
         
         try {
             $this->db->execute($sql, $params);
-            return $this->db->lastInsertId('user_seq');
+            return true;
         } catch (Exception $e) {
             error_log("Create user error: " . $e->getMessage());
             return false;
@@ -155,7 +153,7 @@ class User {
         
         try {
             $result = $this->db->query($sql, $params);
-            return $result[0]['CNT'] > 0;
+            return isset($result[0]['CNT']) && $result[0]['CNT'] > 0;
         } catch (Exception $e) {
             error_log("Username exists check error: " . $e->getMessage());
             return false;
@@ -174,7 +172,7 @@ class User {
         
         try {
             $result = $this->db->query($sql, $params);
-            return $result[0]['CNT'] > 0;
+            return isset($result[0]['CNT']) && $result[0]['CNT'] > 0;
         } catch (Exception $e) {
             error_log("Email exists check error: " . $e->getMessage());
             return false;

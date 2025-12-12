@@ -1,15 +1,11 @@
 <?php
-require_once __DIR__ . '/../config/constants.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/routing.php';
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/AuditLog.php';
 
 class AuthController {
     private $userModel;
     private $auditModel;
     
     public function __construct() {
+        // Database will be loaded from index.php
         $this->userModel = new User();
         $this->auditModel = new AuditLog();
         
@@ -73,20 +69,20 @@ class AuthController {
             // Log the login action
             $this->auditModel->log(
                 $user['USER_ID'],
-                ACTION_LOGIN,
+                'LOGIN',
                 'users',
                 $user['USER_ID'],
                 'User logged in successfully'
             );
             
             // Redirect to appropriate dashboard
-            $_SESSION['success'] = MSG_LOGIN_SUCCESS;
+            $_SESSION['success'] = 'Login successful!';
             $this->redirectToDashboard();
         } else {
             // Track failed login attempt
             $this->trackFailedLogin();
             
-            $_SESSION['error'] = ERR_INVALID_CREDENTIALS;
+            $_SESSION['error'] = 'Invalid username or password';
             Router::redirect('/login');
         }
     }
@@ -97,7 +93,7 @@ class AuthController {
             // Log the logout action
             $this->auditModel->log(
                 $_SESSION['user_id'],
-                ACTION_LOGOUT,
+                'LOGOUT',
                 'users',
                 $_SESSION['user_id'],
                 'User logged out'
@@ -117,7 +113,7 @@ class AuthController {
         
         // Start new session for flash message
         session_start();
-        $_SESSION['success'] = MSG_LOGOUT_SUCCESS;
+        $_SESSION['success'] = 'Logout successful!';
         
         Router::redirect('/login');
     }
@@ -132,10 +128,10 @@ class AuthController {
             return false;
         }
         
-        // Check session timeout
+        // Check session timeout (24 hours)
         if (isset($_SESSION['last_activity'])) {
             $elapsed = time() - $_SESSION['last_activity'];
-            if ($elapsed > SESSION_TIMEOUT) {
+            if ($elapsed > 86400) { // 24 hours
                 // Session expired
                 session_unset();
                 session_destroy();
@@ -160,7 +156,7 @@ class AuthController {
     // Require login (use in controllers)
     public static function requireLogin() {
         if (!self::isLoggedIn()) {
-            $_SESSION['error'] = ERR_SESSION_EXPIRED;
+            $_SESSION['error'] = 'Session expired. Please login again.';
             $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
             Router::redirect('/login');
             exit;
@@ -172,7 +168,7 @@ class AuthController {
         self::requireLogin();
         
         if (!self::hasRole($role)) {
-            $_SESSION['error'] = ERR_UNAUTHORIZED;
+            $_SESSION['error'] = 'You do not have permission to access this page';
             Router::redirect('/login');
             exit;
         }
@@ -192,13 +188,13 @@ class AuthController {
         
         // Default redirects based on role
         switch ($role) {
-            case ROLE_ADMIN:
+            case 'ADMIN':
                 Router::redirect('/admin/dashboard');
                 break;
-            case ROLE_RECEPTIONIST:
+            case 'RECEPTIONIST':
                 Router::redirect('/receptionist/dashboard');
                 break;
-            case ROLE_CUSTOMER:
+            case 'CUSTOMER':
                 Router::redirect('/customer/dashboard');
                 break;
             default:
@@ -226,7 +222,7 @@ class AuthController {
         return $_SESSION['email'] ?? '';
     }
     
-    // Get current username
+    // // Get current username
     // public static function getUsername() {
     //     return $_SESSION['username'] ?? '';
     // }
@@ -310,7 +306,7 @@ class AuthController {
             // Log the action
             $this->auditModel->log(
                 self::getUserId(),
-                ACTION_UPDATE,
+                'UPDATE',
                 'users',
                 self::getUserId(),
                 'User changed their password'
@@ -324,10 +320,8 @@ class AuthController {
         }
     }
     
-    // Forgot password (placeholder for future implementation)
+    // Forgot password
     public function forgotPassword() {
-        // This would typically send a password reset email
-        // For now, just show a message
         $_SESSION['info'] = 'Password reset functionality will be implemented soon. Please contact administrator.';
         Router::redirect('/login');
     }
@@ -341,13 +335,13 @@ class AuthController {
         $role = self::getUserRole();
         
         // Admin can access everything
-        if ($role === ROLE_ADMIN) {
+        if ($role === 'ADMIN') {
             return true;
         }
         
         // Define permissions for each role
         $permissions = [
-            ROLE_RECEPTIONIST => [
+            'RECEPTIONIST' => [
                 'bookings' => ['view', 'create', 'update'],
                 'rooms' => ['view'],
                 'customers' => ['view', 'create'],
@@ -355,7 +349,7 @@ class AuthController {
                 'checkin' => ['create'],
                 'checkout' => ['create']
             ],
-            ROLE_CUSTOMER => [
+            'CUSTOMER' => [
                 'bookings' => ['view', 'create'],
                 'rooms' => ['view'],
                 'invoices' => ['view'],

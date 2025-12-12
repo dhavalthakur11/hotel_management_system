@@ -1,9 +1,4 @@
 <?php
-require_once __DIR__ . '/../config/constants.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../models/AuditLog.php';
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/AuthController.php';
 
 class AuditLogController {
     private $auditModel;
@@ -11,7 +6,7 @@ class AuditLogController {
     
     public function __construct() {
         // Only admin can access audit logs
-        AuthController::requireRole(ROLE_ADMIN);
+        AuthController::requireRole('ADMIN');
         
         $this->auditModel = new AuditLog();
         $this->userModel = new User();
@@ -38,12 +33,12 @@ class AuditLogController {
         
         // Get available actions for filter
         $data['actions'] = [
-            ACTION_CREATE,
-            ACTION_UPDATE,
-            ACTION_DELETE,
-            ACTION_LOGIN,
-            ACTION_LOGOUT,
-            ACTION_VIEW
+            'CREATE',
+            'UPDATE',
+            'DELETE',
+            'LOGIN',
+            'LOGOUT',
+            'VIEW'
         ];
         
         // Get available tables for filter
@@ -60,7 +55,7 @@ class AuditLogController {
         
         // Pagination settings
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $perPage = RECORDS_PER_PAGE;
+        $perPage = 10; // Default records per page
         $offset = ($page - 1) * $perPage;
         
         // Get total count for pagination
@@ -254,7 +249,7 @@ class AuditLogController {
             // Log this action
             $this->auditModel->log(
                 AuthController::getUserId(),
-                ACTION_DELETE,
+                'DELETE',
                 'audit_logs',
                 null,
                 "Cleared audit logs older than {$days} days"

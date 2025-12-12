@@ -4,15 +4,15 @@
 // Application Settings
 define('APP_NAME', 'Hotel Management System');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL', 'http://localhost/hotel-management');
+define('BASE_URL', 'http://localhost/hotel_management_ignou/app/public');
 
 // Session Settings
-define('SESSION_TIMEOUT', 3600); // 1 hour in seconds
+define('SESSION_TIMEOUT', 86400); // 24 hours in seconds
 
-// User Roles
-define('ROLE_ADMIN', 'admin');
-define('ROLE_RECEPTIONIST', 'receptionist');
-define('ROLE_CUSTOMER', 'customer');
+// User Roles (UPPERCASE for consistency)
+define('ROLE_ADMIN', 'ADMIN');
+define('ROLE_RECEPTIONIST', 'RECEPTIONIST');
+define('ROLE_CUSTOMER', 'CUSTOMER');
 
 // Room Status
 define('ROOM_AVAILABLE', 'available');
@@ -54,7 +54,7 @@ define('DISPLAY_DATE_FORMAT', 'd-m-Y');
 define('RECORDS_PER_PAGE', 10);
 
 // File Upload
-define('UPLOAD_PATH', __DIR__ . '/../public/uploads/');
+define('UPLOAD_PATH', __DIR__ . '/../../public/uploads/');
 define('MAX_FILE_SIZE', 5242880); // 5MB
 
 // Email Settings
@@ -73,13 +73,13 @@ define('SMS_SENDER_ID', 'HOTEL');
 define('GST_RATE', 0.18); // 18%
 define('SERVICE_CHARGE', 0.10); // 10%
 
-// Audit Actions
-define('ACTION_CREATE', 'create');
-define('ACTION_UPDATE', 'update');
-define('ACTION_DELETE', 'delete');
-define('ACTION_LOGIN', 'login');
-define('ACTION_LOGOUT', 'logout');
-define('ACTION_VIEW', 'view');
+// Audit Actions (UPPERCASE)
+define('ACTION_CREATE', 'CREATE');
+define('ACTION_UPDATE', 'UPDATE');
+define('ACTION_DELETE', 'DELETE');
+define('ACTION_LOGIN', 'LOGIN');
+define('ACTION_LOGOUT', 'LOGOUT');
+define('ACTION_VIEW', 'VIEW');
 
 // Error Messages
 define('ERR_INVALID_CREDENTIALS', 'Invalid username or password');
@@ -95,4 +95,19 @@ define('MSG_BOOKING_SUCCESS', 'Booking created successfully');
 define('MSG_SAVE_SUCCESS', 'Data saved successfully');
 define('MSG_UPDATE_SUCCESS', 'Data updated successfully');
 define('MSG_DELETE_SUCCESS', 'Data deleted successfully');
+
+// Info Messages
+define('MSG_PROCESSING', 'Processing your request...');
+define('MSG_LOADING', 'Loading...');
+
+// Database
+define('DB_HOST', '10.147.17.170');
+define('DB_PORT', '1521');
+define('DB_SERVICE', 'orclpdb');
+define('DB_USER', 'system');
+define('DB_PASS', 'dhaval123');
+
+// Timezone
+define('APP_TIMEZONE', 'Asia/Kolkata');
+date_default_timezone_set(APP_TIMEZONE);
 ?>

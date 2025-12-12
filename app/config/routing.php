@@ -72,20 +72,36 @@ class Router {
         $this->routes['GET']['/audit/logs'] = ['controller' => 'AuditLogController', 'method' => 'logs'];
     }
     
-    // Route the request
+    // Route the request - FIXED VERSION
     public function route() {
         $requestMethod = $_SERVER['REQUEST_METHOD'];
-        $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $requestUri = '';
         
-        // Remove base path if application is in subdirectory
-        $basePath = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
-        $requestUri = str_replace($basePath, '', $requestUri);
+        // Get the request URI
+        if (isset($_GET['url'])) {
+            // If using .htaccess rewrite
+            $requestUri = '/' . trim($_GET['url'], '/');
+        } else {
+            // Direct request
+            $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            
+            // Remove base path
+            $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
+            if ($scriptPath !== '/' && strpos($requestUri, $scriptPath) === 0) {
+                $requestUri = substr($requestUri, strlen($scriptPath));
+            }
+        }
         
-        // Remove trailing slash
-        $requestUri = rtrim($requestUri, '/');
-        if ($requestUri === '') {
+        // Remove trailing slash and ensure starts with /
+        $requestUri = '/' . trim($requestUri, '/');
+        if ($requestUri === '//') {
             $requestUri = '/';
         }
+        
+        // Debug output (comment out in production)
+        // echo "Request Method: $requestMethod<br>";
+        // echo "Request URI: $requestUri<br>";
+        // echo "Registered Routes: " . json_encode($this->routes[$requestMethod]) . "<br>";
         
         // Check if route exists
         if (isset($this->routes[$requestMethod][$requestUri])) {
@@ -106,25 +122,28 @@ class Router {
         $controllerFile = __DIR__ . '/../controllers/' . $controllerName . '.php';
         
         if (!file_exists($controllerFile)) {
-            die("Controller not found: {$controllerName}");
+            die("Controller file not found: {$controllerFile}");
         }
         
-        require_once $controllerFile;
-        
-        // Instantiate controller
+        // Check if class exists (it should be loaded from index.php)
         if (!class_exists($controllerName)) {
             die("Controller class not found: {$controllerName}");
         }
         
-        $controller = new $controllerName();
-        
-        // Check if method exists
-        if (!method_exists($controller, $methodName)) {
-            die("Method not found: {$methodName} in {$controllerName}");
+        try {
+            $controller = new $controllerName();
+            
+            // Check if method exists
+            if (!method_exists($controller, $methodName)) {
+                die("Method not found: {$methodName} in {$controllerName}");
+            }
+            
+            // Call the method
+            return $controller->$methodName();
+            
+        } catch (Exception $e) {
+            die("Error: " . $e->getMessage());
         }
-        
-        // Call the method
-        return $controller->$methodName();
     }
     
     // 404 Not Found handler
@@ -136,15 +155,21 @@ class Router {
     
     // Redirect helper
     public static function redirect($path) {
-        $basePath = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
-        header("Location: {$basePath}{$path}");
+        $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
+        if ($scriptPath === '/') {
+            $scriptPath = '';
+        }
+        header("Location: {$scriptPath}{$path}");
         exit;
     }
     
     // Get current URL
     public static function url($path = '') {
-        $basePath = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
-        return $basePath . $path;
+        $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
+        if ($scriptPath === '/') {
+            $scriptPath = '';
+        }
+        return $scriptPath . $path;
     }
 }
 ?>
