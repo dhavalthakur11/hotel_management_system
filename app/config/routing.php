@@ -72,36 +72,35 @@ class Router {
         $this->routes['GET']['/audit/logs'] = ['controller' => 'AuditLogController', 'method' => 'logs'];
     }
     
-    // Route the request - FIXED VERSION
+    // Route the request
     public function route() {
         $requestMethod = $_SERVER['REQUEST_METHOD'];
-        $requestUri = '';
+        $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // Get the request URI
-        if (isset($_GET['url'])) {
-            // If using .htaccess rewrite
-            $requestUri = '/' . trim($_GET['url'], '/');
-        } else {
-            // Direct request
-            $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            
-            // Remove base path
-            $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
-            if ($scriptPath !== '/' && strpos($requestUri, $scriptPath) === 0) {
-                $requestUri = substr($requestUri, strlen($scriptPath));
-            }
+        // Remove base path
+        $basePath = '/hotel_management_ignou/app/public';
+        if (strpos($requestUri, $basePath) === 0) {
+            $requestUri = substr($requestUri, strlen($basePath));
         }
         
-        // Remove trailing slash and ensure starts with /
-        $requestUri = '/' . trim($requestUri, '/');
-        if ($requestUri === '//') {
+        if (empty($requestUri)) {
+            $requestUri = '/';
+        } else {
+            $requestUri = '/' . ltrim($requestUri, '/');
+        }
+        
+        $requestUri = rtrim($requestUri, '/');
+        if ($requestUri === '') {
             $requestUri = '/';
         }
         
-        // Debug output (comment out in production)
-        // echo "Request Method: $requestMethod<br>";
-        // echo "Request URI: $requestUri<br>";
-        // echo "Registered Routes: " . json_encode($this->routes[$requestMethod]) . "<br>";
+        // Remove index.php from URI if present
+        if (strpos($requestUri, '/index.php') === 0) {
+            $requestUri = str_replace('/index.php', '', $requestUri);
+            if (empty($requestUri)) {
+                $requestUri = '/';
+            }
+        }
         
         // Check if route exists
         if (isset($this->routes[$requestMethod][$requestUri])) {
@@ -109,7 +108,7 @@ class Router {
             return $this->dispatch();
         }
         
-        // Route not found
+        // Not found
         $this->notFound();
     }
     
@@ -118,14 +117,7 @@ class Router {
         $controllerName = $this->currentRoute['controller'];
         $methodName = $this->currentRoute['method'];
         
-        // Load controller file
-        $controllerFile = __DIR__ . '/../controllers/' . $controllerName . '.php';
-        
-        if (!file_exists($controllerFile)) {
-            die("Controller file not found: {$controllerFile}");
-        }
-        
-        // Check if class exists (it should be loaded from index.php)
+        // Check if class exists
         if (!class_exists($controllerName)) {
             die("Controller class not found: {$controllerName}");
         }
@@ -155,21 +147,15 @@ class Router {
     
     // Redirect helper
     public static function redirect($path) {
-        $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
-        if ($scriptPath === '/') {
-            $scriptPath = '';
-        }
-        header("Location: {$scriptPath}{$path}");
+        $basePath = '/hotel_management_ignou/app/public';
+        header("Location: {$basePath}{$path}");
         exit;
     }
     
     // Get current URL
     public static function url($path = '') {
-        $scriptPath = dirname($_SERVER['SCRIPT_NAME']);
-        if ($scriptPath === '/') {
-            $scriptPath = '';
-        }
-        return $scriptPath . $path;
+        $basePath = '/hotel_management_ignou/app/public';
+        return $basePath . $path;
     }
 }
 ?>

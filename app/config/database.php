@@ -33,45 +33,27 @@ class Database {
                 putenv("TNS_ADMIN=C:\\oracle\\product\\21c\\dbhomeXE\\network\\admin");
             }
             
-            // Method 1: Try Easy Connect (simple format)
+            // Connection timeout - 5 seconds
+            ini_set('default_socket_timeout', 5);
+            
+            // Try Easy Connect with timeout
             $easy_connect = "{$this->host}:{$this->port}/{$this->service_name}";
             
-            // Remove charset parameter - it causes ORA-24960 error
-            $this->connection = oci_connect(
+            echo "Attempting connection to: $easy_connect<br>";
+            
+            $this->connection = @oci_connect(
                 $this->username,
                 $this->password,
-                $easy_connect
+                $easy_connect,
+                'AL32UTF8'
             );
-            
-            // Method 2: If easy connect fails, try tnsnames.ora
-            if (!$this->connection) {
-                $this->connection = oci_connect(
-                    $this->username,
-                    $this->password,
-                    $this->service_name
-                );
-            }
-            
-            // Method 3: If still failing, try with full connection descriptor
-            if (!$this->connection) {
-                $tns_desc = "(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST={$this->host})(PORT={$this->port}))(CONNECT_DATA=(SERVICE_NAME={$this->service_name})))";
-                $this->connection = oci_connect(
-                    $this->username,
-                    $this->password,
-                    $tns_desc
-                );
-            }
             
             if (!$this->connection) {
                 $error = oci_error();
-                throw new Exception($error['message']);
+                throw new Exception("Connection failed: " . $error['message']);
             }
             
-            // Set default date format
-            $date_format = "ALTER SESSION SET NLS_DATE_FORMAT = 'YYYY-MM-DD HH24:MI:SS'";
-            $stm = oci_parse($this->connection, $date_format);
-            oci_execute($stm);
-            oci_free_statement($stm);
+            echo "✓ Connected successfully!<br>";
             
         } catch (Exception $e) {
             die("Database Connection Error: " . $e->getMessage());
